@@ -65,3 +65,40 @@ export async function errorOf(p: Promise<unknown>): Promise<string | null> {
     return (e as Error).message;
   }
 }
+
+type EventOpts = {
+  capacity?: number;
+  requiresApproval?: boolean;
+  startsInHours?: number;
+  status?: "open" | "cancelled";
+};
+
+/** イベントを作る（既定: 定員2・承認制なし・1日後に開始） */
+export async function createEvent(admin: pg.Client, hostId: string, opts: EventOpts = {}) {
+  const hours = opts.startsInHours ?? 24;
+  const { rows } = await admin.query(
+    `insert into public.events
+       (host_id, title, starts_at, ends_at, venue, area, capacity, requires_approval, status)
+     values ($1, 'テスト練習会', now() + make_interval(hours => $2), now() + make_interval(hours => $2 + 2),
+             '船橋市総合体育館', '千葉県船橋市', $3, $4, $5)
+     returning id`,
+    [hostId, hours, opts.capacity ?? 2, opts.requiresApproval ?? false, opts.status ?? "open"],
+  );
+  return rows[0].id as string;
+}
+
+/** 管理者権限で参加行を直接入れる（テストの前提づくり用） */
+export async function insertParticipation(
+  admin: pg.Client,
+  eventId: string,
+  userId: string,
+  status: string,
+) {
+  const { rows } = await admin.query(
+    `insert into public.participations (event_id, user_id, status, waitlisted_at)
+     values ($1, $2, $3, case when $3 = 'waitlisted' then clock_timestamp() end)
+     returning id`,
+    [eventId, userId, status],
+  );
+  return rows[0].id as string;
+}
