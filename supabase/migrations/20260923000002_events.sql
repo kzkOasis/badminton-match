@@ -97,17 +97,17 @@ alter table public.participations enable row level security;
 alter table public.messages enable row level security;
 
 -- events: 誰でも読める。作成はログインユーザー、更新は主催者のみ。削除はしない（中止にする）
-create policy "events: 誰でも読める"
+create policy events_select_all
   on public.events for select
   to anon, authenticated
   using (true);
 
-create policy "events: ログインユーザーは自分が主催者のイベントを作れる"
+create policy events_insert_as_host
   on public.events for insert
   to authenticated
   with check (host_id = (select auth.uid()));
 
-create policy "events: 主催者だけ更新できる"
+create policy events_update_host
   on public.events for update
   to authenticated
   using (host_id = (select auth.uid()))
@@ -117,7 +117,7 @@ revoke insert, update, delete on public.events from anon;
 revoke delete on public.events from authenticated;
 
 -- participations: 本人と、そのイベントの主催者が読める。書き込みは関数経由のみ
-create policy "participations: 本人と主催者が読める"
+create policy participations_select_self_or_host
   on public.participations for select
   to authenticated
   using (user_id = (select auth.uid()) or public.is_event_host(event_id));
@@ -126,12 +126,12 @@ revoke all on public.participations from anon;
 revoke insert, update, delete on public.participations from authenticated;
 
 -- messages: 主催者と参加確定者が読める。中止されていないイベントにだけ投稿できる
-create policy "messages: メンバーが読める"
+create policy messages_select_member
   on public.messages for select
   to authenticated
   using (public.is_event_member(event_id));
 
-create policy "messages: メンバーが中止されていないイベントに投稿できる"
+create policy messages_insert_member_open_event
   on public.messages for insert
   to authenticated
   with check (

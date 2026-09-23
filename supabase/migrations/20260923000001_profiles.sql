@@ -25,17 +25,17 @@ create table public.profiles (
 
 alter table public.profiles enable row level security;
 
-create policy "profiles: ログインユーザーは全員読める"
+create policy profiles_select_authenticated
   on public.profiles for select
   to authenticated
   using (true);
 
-create policy "profiles: 本人だけ作成できる"
+create policy profiles_insert_own
   on public.profiles for insert
   to authenticated
   with check (id = (select auth.uid()));
 
-create policy "profiles: 本人だけ更新できる"
+create policy profiles_update_own
   on public.profiles for update
   to authenticated
   using (id = (select auth.uid()))
