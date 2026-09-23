@@ -38,6 +38,7 @@ export default async function EditEventPage(props: PageProps<"/events/[id]/edit"
           event={event}
           submitLabel="保存する"
           minCapacity={Math.max(1, event.approved_count)}
+          waitlistCount={event.waitlist_count}
         />
       </div>
       <section className="border-destructive/40 space-y-3 rounded-xl border p-4">

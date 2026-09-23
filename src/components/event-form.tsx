@@ -65,12 +65,14 @@ export function EventForm({
   defaultPrefecture = "",
   submitLabel,
   minCapacity = 1,
+  waitlistCount = 0,
 }: {
   action: Action;
   event?: Tables<"events"> | null;
   defaultPrefecture?: string;
   submitLabel: string;
   minCapacity?: number;
+  waitlistCount?: number;
 }) {
   const [state, formAction, pending] = useActionState<FormState<EventFormField>, FormData>(action, {});
   // 送信後はサーバーから返った値を優先する（入力を消さないため）
@@ -195,7 +197,17 @@ export function EventForm({
           label="募集人数"
           required
           error={e.capacity}
-          hint={minCapacity > 1 ? `参加確定が${minCapacity}人いるため、${minCapacity}人以上` : "主催者は含めない"}
+          hint={
+            <>
+              {minCapacity > 1 ? `参加確定が${minCapacity}人いるため、${minCapacity}人以上` : "主催者は含めない"}
+              {waitlistCount > 0 && (
+                <>
+                  <br />
+                  増やすと、キャンセル待ち（{waitlistCount}人）が順番に繰り上がります
+                </>
+              )}
+            </>
+          }
         >
           <Input
             id="capacity"
