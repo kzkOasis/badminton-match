@@ -26,6 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <nav className="flex justify-center gap-4">
             <Link href="/terms">利用規約</Link>
             <Link href="/privacy">プライバシーポリシー</Link>
+            <Link href="/contact">お問い合わせ</Link>
           </nav>
         </footer>
       </body>

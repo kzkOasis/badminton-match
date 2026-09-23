@@ -17,7 +17,9 @@ export default async function LoginPage(props: PageProps<"/login">) {
     <div className="mx-auto max-w-sm py-8">
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">ログイン</CardTitle>
+          <CardTitle>
+            <h1 className="text-xl">ログイン</h1>
+          </CardTitle>
           <CardDescription>
             イベントの作成・申込には Google アカウントでのログインが必要です。
           </CardDescription>
