@@ -44,6 +44,14 @@ export default async function EventDetailPage(props: PageProps<"/events/[id]">) 
       ? await supabase.rpc("my_waitlist_position", { p_event_id: event.id })
       : { data: null };
 
+  const { count: pendingCount } = isHost
+    ? await supabase
+        .from("participations")
+        .select("id", { count: "exact", head: true })
+        .eq("event_id", event.id)
+        .eq("status", "pending")
+    : { count: 0 };
+
   const cancelled = event.status === "cancelled";
   const started = hasStarted(event);
   const full = isFull(event);
@@ -140,6 +148,19 @@ export default async function EventDetailPage(props: PageProps<"/events/[id]">) 
         <section className="space-y-2 rounded-xl border p-4">
           <h2 className="font-semibold">主催者メニュー</h2>
           <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm">
+              <Link href={`/events/${event.id}/manage`}>
+                申込管理
+                {!!pendingCount && (
+                  <Badge variant="destructive" className="ml-1">
+                    承認待ち {pendingCount}
+                  </Badge>
+                )}
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/events/${event.id}/chat`}>チャット</Link>
+            </Button>
             {!cancelled && (
               <Button asChild variant="outline" size="sm">
                 <Link href={`/events/${event.id}/edit`}>編集・中止</Link>

@@ -166,6 +166,10 @@ export type Database = {
         Args: { p_event_id: string; p_message?: string | null };
         Returns: string;
       };
+      decide_participation: {
+        Args: { p_participation_id: string; p_decision: string };
+        Returns: string;
+      };
       cancel_participation: { Args: { p_event_id: string }; Returns: undefined };
       mark_participation_updates_seen: { Args: never; Returns: undefined };
       my_waitlist_position: { Args: { p_event_id: string }; Returns: number | null };
