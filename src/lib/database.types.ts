@@ -162,6 +162,13 @@ export type Database = {
         Returns: { event_id: string; last_message_at: string }[];
       };
       is_event_member: { Args: { p_event_id: string }; Returns: boolean };
+      apply_to_event: {
+        Args: { p_event_id: string; p_message?: string | null };
+        Returns: string;
+      };
+      cancel_participation: { Args: { p_event_id: string }; Returns: undefined };
+      mark_participation_updates_seen: { Args: never; Returns: undefined };
+      my_waitlist_position: { Args: { p_event_id: string }; Returns: number | null };
       is_event_host: { Args: { p_event_id: string }; Returns: boolean };
     };
     Enums: { [_ in never]: never };

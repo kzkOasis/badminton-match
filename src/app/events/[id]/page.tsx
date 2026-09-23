@@ -9,6 +9,7 @@ import { feeLabel, hasStarted, isFull } from "@/lib/event-state";
 import { levelRangeLabel } from "@/lib/levels";
 import { getEventSummary } from "@/lib/queries/events";
 import { createClient } from "@/lib/supabase/server";
+import { ParticipationPanel } from "./participation-panel";
 
 export async function generateMetadata(props: PageProps<"/events/[id]">): Promise<Metadata> {
   const { id } = await props.params;
@@ -28,6 +29,20 @@ export default async function EventDetailPage(props: PageProps<"/events/[id]">) 
   const { data: host } = userId
     ? await supabase.from("profiles").select("display_name, level").eq("id", event.host_id).maybeSingle()
     : { data: null };
+
+  const { data: mine } =
+    userId && !isHost
+      ? await supabase
+          .from("participations")
+          .select("status")
+          .eq("event_id", event.id)
+          .eq("user_id", userId)
+          .maybeSingle()
+      : { data: null };
+  const { data: waitlistPosition } =
+    mine?.status === "waitlisted"
+      ? await supabase.rpc("my_waitlist_position", { p_event_id: event.id })
+      : { data: null };
 
   const cancelled = event.status === "cancelled";
   const started = hasStarted(event);
@@ -80,6 +95,44 @@ export default async function EventDetailPage(props: PageProps<"/events/[id]">) 
         <section className="space-y-2">
           <h2 className="font-semibold">説明</h2>
           <p className="text-sm leading-relaxed whitespace-pre-wrap">{event.description}</p>
+        </section>
+      )}
+
+      {!isHost && (
+        <section className="rounded-xl border p-4">
+          {cancelled ? (
+            <p className="text-sm">このイベントは中止になりました。</p>
+          ) : !userId ? (
+            <div className="space-y-2">
+              <Button asChild size="lg" className="w-full">
+                <Link href={`/login?next=${encodeURIComponent(`/events/${event.id}`)}`}>
+                  ログインして申し込む
+                </Link>
+              </Button>
+            </div>
+          ) : started ? (
+            <p className="text-sm">
+              {mine?.status === "approved" ? (
+                <>
+                  参加確定済みです。{" "}
+                  <Link href={`/events/${event.id}/chat`} className="text-primary underline">
+                    チャットを開く
+                  </Link>
+                </>
+              ) : (
+                "開始時刻を過ぎたため、申し込みは締め切られました。"
+              )}
+            </p>
+          ) : (
+            <ParticipationPanel
+              eventId={event.id}
+              status={mine?.status ?? null}
+              waitlistPosition={waitlistPosition ?? null}
+              full={full}
+              hasWaitlist={event.waitlist_count > 0}
+              requiresApproval={event.requires_approval}
+            />
+          )}
         </section>
       )}
 
