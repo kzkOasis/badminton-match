@@ -1,12 +1,13 @@
 import { randomUUID } from "node:crypto";
 import pg from "pg";
-import { afterAll, inject } from "vitest";
+import { afterEach, inject } from "vitest";
 
 export const dbUrl = inject("dbUrl");
 
 const clients: pg.Client[] = [];
 
-afterAll(async () => {
+// テストごとに接続を閉じる（CI の Postgres の同時接続数上限を超えないように）
+afterEach(async () => {
   await Promise.all(clients.splice(0).map((c) => c.end()));
 });
 

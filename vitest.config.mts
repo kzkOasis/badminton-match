@@ -21,6 +21,8 @@ export default defineConfig({
           name: "db",
           include: ["tests/db/**/*.test.ts"],
           globalSetup: ["tests/db/global-setup.ts"],
+          // 同じ DB を使うので、ファイルは順番に実行する
+          fileParallelism: false,
           testTimeout: 20_000,
           hookTimeout: 60_000,
         },
