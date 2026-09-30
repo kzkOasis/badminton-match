@@ -12,7 +12,7 @@ export async function SiteHeader() {
     <header className="bg-background/95 sticky top-0 z-10 border-b backdrop-blur">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-2 px-4">
         <Link href="/" className="mr-auto font-bold">
-          🏸 バドミントン募集
+          🏸 バドマッチ
         </Link>
         <Button asChild variant="ghost" size="sm">
           <Link href="/events">さがす</Link>

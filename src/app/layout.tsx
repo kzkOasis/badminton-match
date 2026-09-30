@@ -5,8 +5,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "バドミントン募集",
-    template: "%s | バドミントン募集",
+    default: "バドマッチ",
+    template: "%s | バドマッチ",
   },
   description: "バドミントンの練習会・ゲーム会を作って、一緒に打つ人を募集できるアプリです。",
 };
