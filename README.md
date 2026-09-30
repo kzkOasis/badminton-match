@@ -56,6 +56,12 @@ npm test
 `tests/db/supabase-stub.sql`（auth スキーマ・ロールの最小互換）とマイグレーションを流してから実行する。
 接続できないときは DB テストだけスキップする（CI では失敗にする）。
 
+## 本番環境
+
+- Vercel プロジェクト `badminton-match-qvcs`（https://badminton-match-qvcs.vercel.app）。main にマージすると自動デプロイされる
+- Vercel プロジェクト `badminton-match`（qvcs なし）は重複で、本番ではない
+- Supabase プロジェクト `badminton-matching`
+
 ## Vercel への公開
 
 1. Vercel でこのリポジトリをインポートする（Framework Preset: Next.js。設定は既定のままでよい）
